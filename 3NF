@@ -1,0 +1,135 @@
+3NF : A relation that is in 1NF and 2NF and in which no non-candidate-key attribute is
+transitively dependent on any candidate key
+
+Users Table
+Attributes: USERID, USERNAME, PASSWORD, EMAIL, ROLE
+Primary Key: USERID
+Functional Dependencies:
+USERID -> USERNAME, PASSWORD, EMAIL, ROLE
+Analysis: All non-key attributes (USERNAME, PASSWORD, EMAIL, ROLE) are fully dependent on the primary key USERID. No transitive dependencies are present, so this table is already in 3NF.
+Auction Table
+Attributes: AUCTIONID, CARID, STARTTIME, ENDTIME, RESERVEPRICE, CURRENTBID, DETAILS, STATUS, STARTINGBID
+Primary Key: AUCTIONID
+Functional Dependencies:
+AUCTIONID -> CARID, STARTTIME, ENDTIME, RESERVEPRICE, CURRENTBID, DETAILS, STATUS, STARTINGBID
+Analysis: Each non-key attribute depends solely on AUCTIONID, with no partial or transitive dependencies. This table is in 3NF.
+Bids Table
+Attributes: BIDID, AUCTIONID, USERID, BIDAMOUNT, BIDTIME
+Primary Key: BIDID
+Functional Dependencies:
+BIDID -> AUCTIONID, USERID, BIDAMOUNT, BIDTIME
+AUCTIONID, USERID, BIDTIME -> BIDAMOUNT
+Analysis: BIDID uniquely determines all other attributes, and BIDID is the only candidate key. This table is in 3NF.
+Cars Table
+Attributes: CARID, MAKE, MODEL, YEAR, MILEAGE, VIN, DESCRIPTION, USERID, IMAGEURL
+Primary Key: CARID
+Functional Dependencies:
+CARID -> MAKE, MODEL, YEAR, MILEAGE, VIN, DESCRIPTION, USERID, IMAGEURL
+Analysis: All attributes depend solely on CARID, so this table is in 3NF.
+Transactions Table (with possible decomposition)
+Attributes: TRANSACTIONID, USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+Primary Key: TRANSACTIONID
+Functional Dependencies:
+TRANSACTIONID -> USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+USERID, AUCTIONID -> PAYMENTAMOUNT, PAYMENTDATE (if users can only make one payment per auction)
+Analysis:
+If each user is limited to one payment per auction, USERID, AUCTIONID -> PAYMENTAMOUNT, PAYMENTDATE is a transitive dependency.
+Decomposition Algorithm for 3NF
+	First, we find the candidate keys:
+Starting with the primary key, TRANSACTIONID.
+If we assume a unique payment per auction for each user, then (USERID, AUCTIONID) could also be considered a candidate key.
+Second, Identify Functional Dependencies:
+TRANSACTIONID -> USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+USERID, AUCTIONID -> PAYMENTAMOUNT, PAYMENTDATE (transitive dependency)
+there is a transitive dependency, decomposing the table into two tables to remove it.
+Then, we apply the Bernstein’s Algorithm for Decomposition 
+            Bernstein’s Algorithm: Derives 3NF schema that is lossless and dependency preserving
+	Step 1: Identify the Functional Dependencies
+TRANSACTIONID -> USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+USERID, AUCTIONID -> PAYMENTAMOUNT, PAYMENTDATE
+
+Step 2: Reduce the List of Functional Dependencies
+Objective: Simplifying the list of FDs to create a minimal cover (i.e., remove redundant FDs or attributes within FDs)
+TRANSACTIONID -> USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+USERID, AUCTIONID -> PAYMENTAMOUNT, PAYMENTDATE
+Step 3: Create Relations for Each Functional Dependency
+From TRANSACTIONID -> USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE:
+Create a relation: R1(TRANSACTIONID, USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE)
+From USERID, AUCTIONID -> PAYMENTAMOUNT, PAYMENTDATE:
+Create a relation: R2(USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE)
+Step 4: Combine Relations to Ensure Dependency Preservation and Lossless Decomposition
+Since R1 and R2 contain overlapping attributes (USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE), we need to adjust them to avoid redundancy.
+Final Relations:
+Transactions: R1(TRANSACTIONID, USERID, AUCTIONID)
+This stores the unique identifier for each transaction.
+UserPayments: R2(USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE)
+This ensures that USERID and AUCTIONID can uniquely determine PAYMENTAMOUNT and PAYMENTDATE.
+
+This decomposition eliminates the transitive dependency by ensuring that PAYMENTAMOUNT and PAYMENTDATE are dependent only on the candidate key (USERID, AUCTIONID) in UserPayments, while TRANSACTIONID remains a unique identifier for each transaction in Transactions table.
+
+
+Initial Table: Orders
+We have a table Orders with the following attributes:
+| OrderID | CustomerID | CustomerName | ProductID | ProductName | ProductID | Quantity | OrderDate |  
+Functional Dependencies:
+OrderID –> CustomerID, CustomerName, ProductID, ProductName, Quantity, OrderDate
+ProductID -> ProductName
+CustomerID -> CustomerName
+
+Primary Key: OrderID
+Composite Key (alternative): (CustomerID, ProductID, OrderDate), assuming one customer orders one type of product per day.
+Step-by-Step Decomposition
+Step 1: First Normal Form (1NF)
+To achieve 1NF:
+Rule: Ensure that each column contains atomic values and there are no repeating groups.
+In this case, our table is already in 1NF because each cell contains only one value, and there are no repeating groups.
+Step 2: Second Normal Form (2NF)
+To achieve 2NF:
+Rule: Ensure the table is in 1NF and remove any partial dependencies.
+A partial dependency occurs when a non-key attribute depends on only part of a composite primary key.
+Since OrderID is a primary key that uniquely identifies each row, we check for partial dependencies with our alternative composite key (CustomerID, ProductID, OrderDate):
+
+Partial Dependency: CustomerID -> CustomerName — CustomerName depends on part of the composite key (CustomerID).
+Partial Dependency: ProductID -> ProductName — ProductName depends on part of the composite key (ProductID).
+
+Decompose the Table:
+We split Orders into two new tables to remove partial dependencies:
+
+Orders Table:
+	•	Attributes: OrderID, CustomerID, ProductID, Quantity, OrderDate
+	•	Primary Key: OrderID
+Customers Table:
+	•	Attributes: CustomerID, CustomerName
+	•	Primary Key: CustomerID
+Products Table:
+	•	Attributes: ProductID, ProductName
+	•	Primary Key: ProductID
+
+Now, the Orders table is in 2NF because all non-key attributes are fully functionally dependent on the entire primary key.
+
+Step 3: Third Normal Form (3NF)
+To achieve 3NF:
+
+Rule: Ensure the table is in 2NF and remove any transitive dependencies.
+A transitive dependency occurs when a non-key attribute depends on another non-key attribute, not directly on the primary key.
+In our new schema, there are no transitive dependencies in the Orders, Customers, or Products tables. Each non-key attribute in these tables depends only on the primary key of its table.
+
+Final 3NF Tables
+Orders Table:
+	•	| OrderID | CustomerID | ProductID | Quantity | OrderDate |
+	•	Primary Key: OrderID
+Customers Table:
+	•	| CustomerID | CustomerName |
+	•	Primary Key: CustomerID
+Products Table:
+	•	| ProductID | ProductName |
+	•	Primary Key: ProductID
+
+Summary
+1NF: Removed any repeating groups, ensured atomic values (already satisfied).
+2NF: Removed partial dependencies by decomposing into Orders, Customers, and Products.
+3NF: Removed transitive dependencies, ensuring each table only has attributes dependent on its primary key.
+
+
+
+
