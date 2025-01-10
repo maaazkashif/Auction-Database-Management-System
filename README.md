@@ -8,19 +8,24 @@ The database consists of the following tables:
 Users Table
 Attributes: UserID, Username, Password, Email, Role (Buyer/Seller)
 Role ensures users are classified correctly.
+
 Cars Table
 Attributes: CarID, Make, Model, Year, Color, Mileage
 Ensures unique identification of cars with essential details.
+
 Auction Table
 Attributes: AuctionID, CarID, StartTime, EndTime, ReservePrice, CurrentBid, Details, Status, StartingBid
 Tracks auctions and links to the Cars table.
+
 Bids Table
 Attributes: BidID, AuctionID, UserID, BidAmount, BidTime
 Links users with auctions and maintains bidding history.
+
 (Transactions Table Decomposed into two tables resulting in BCNF form)
 Transaction Table
 Attributes: TransactionID, UserID, AuctionID
 Links the TransactionID to UserID and AuctionID
+
 UserPayment Table
 Attributes: AuctionID, UserID, PaymentAmount, PaymentDate
 Links AuctionID and UserID to PaymentAmount and PaymentDate
