@@ -75,7 +75,28 @@ the payment).
 o PaymentAmount: Amount of the payment.
 o PaymentDate: Date of the payment.
 
-4. Technical Requirements
+4. Relationships
+
+Users ↔ Bids
+Relationship: One-to-Many (One User can place many Bids)
+
+Users ↔ Cars
+Relationship: One-to-Many (One User can sell many Cars)
+
+Cars ↔ Auctions
+Relationship: One-to-One (One Car is listed in one Auction)
+
+Auctions ↔ Bids
+Relationship: One-to-Many (One Auction can have many Bids)
+
+Auctions ↔ Transactions
+Relationship: One-to-One (One Auction results in one Transaction)
+
+Transactions ↔ Users (Buyers)
+Relationship: One-to-One (One User makes one Transaction)
+
+
+5. Technical Requirements
  Database Schema: The database consists of five key tables (Users, Cars, Auctions, Bids,
 Transactions) designed to efficiently manage all aspects of the auction system.
  Security: Sensitive data, such as user passwords, must be encrypted. User access to the system
@@ -85,7 +106,7 @@ without performance degradation.
  Backup: Regular backup procedures should be implemented to ensure data recovery in case of
 system failures or data loss.
 
-5. Conclusion
+6. Conclusion
 The Car Auction DBMS is structured to efficiently handle the complexities of online car auctions. By
 utilizing a streamlined database schema with five essential tables, it supports critical functionalities such
 as user management, car listing, auction tracking, bidding, and transaction processing. This design
