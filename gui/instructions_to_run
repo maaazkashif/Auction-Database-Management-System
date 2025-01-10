@@ -1,0 +1,9 @@
+I am using Oracle's Instant Client software to connect our Oracle 11g database to a Python backend.
+
+Required Configurations:
+1. Download and install Oracle Instant Client for your machine from the Oracle website.
+2. Install cx_Oracle using pip: `pip install cx_Oracle`.
+3. Install tkinter using pip: `pip install tkinter` (tkinter is used for the GUI).
+
+Running the Application:
+Execute the `auction.py` file in a Python IDE where all the configurations are set up. A GUI window will appear with the options as described in the lab individual assessment.
