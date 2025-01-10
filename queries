@@ -1,0 +1,130 @@
+-- Q1: Extract "IRR" Brand Cars with Auction Start and End Times
+SELECT DISTINCT
+    m3kashif.auction.auctionid,
+    m3kashif.auction.status,
+    m3kashif.auction.carid,
+    m3kashif.auction.starttime,
+    m3kashif.auction.endtime,
+    m3kashif.cars.make,
+    m3kashif.cars.model
+FROM
+    m3kashif.auction
+JOIN
+    m3kashif.cars ON m3kashif.auction.carid = m3kashif.cars.carid
+WHERE
+    m3kashif.auction.status = 'IRR'
+ORDER BY
+    m3kashif.auction.starttime DESC;
+
+-- Q2: List of Buyers with Recent Transactions
+SELECT
+    m3kashif.users.userid,
+    m3kashif.users.username,
+    m3kashif.transactions.paymentamount,
+    m3kashif.transactions.paymentdate
+FROM
+    m3kashif.users
+LEFT JOIN m3kashif.transactions ON m3kashif.users.userid = m3kashif.transactions.userid
+WHERE
+    m3kashif.users.role = 0
+ORDER BY
+    m3kashif.transactions.paymentdate DESC;
+
+-- Q3: Sellers with Active Auctions
+SELECT DISTINCT
+    m3kashif.users.userid,
+    m3kashif.users.username,
+    m3kashif.auction.auctionid,
+    m3kashif.auction.status
+FROM
+    m3kashif.users
+JOIN m3kashif.cars ON m3kashif.users.userid = m3kashif.cars.userid
+JOIN m3kashif.auction ON m3kashif.cars.carid = m3kashif.auction.carid
+WHERE
+    m3kashif.users.role = 1
+    AND m3kashif.auction.status = 'Active'
+ORDER BY
+    m3kashif.users.username;
+
+-- Q4: Count of Toyota Cars by Year
+SELECT
+    m3kashif.cars.year,
+    COUNT(m3kashif.cars.carid) AS toyota_count
+FROM
+    m3kashif.cars
+WHERE
+    m3kashif.cars.make = 'Toyota'
+GROUP BY
+    m3kashif.cars.year
+ORDER BY
+    m3kashif.cars.year;
+
+-- Q5: Total Transaction Amount by User in 2020
+SELECT
+    m3kashif.transactions.userid,
+    m3kashif.users.username,
+    SUM(m3kashif.transactions.paymentamount) AS total_amount
+FROM
+    m3kashif.transactions
+JOIN m3kashif.users ON m3kashif.transactions.userid = m3kashif.users.userid
+WHERE
+    m3kashif.transactions.paymentdate BETWEEN TO_DATE('01-01-2020', 'DD-MM-YYYY')
+    AND TO_DATE('31-12-2020', 'DD-MM-YYYY')
+GROUP BY
+    m3kashif.transactions.userid, m3kashif.users.username
+ORDER BY
+    total_amount DESC;
+
+-- Q6: Auctions with Multiple Users Participating
+SELECT
+    m3kashif.auction.auctionid,
+    m3kashif.auction.details,
+    COUNT(m3kashif.userauctionxref.userid) AS participant_count
+FROM
+    m3kashif.userauctionxref
+JOIN m3kashif.auction ON m3kashif.userauctionxref.auctionid = m3kashif.auction.auctionid
+GROUP BY
+    m3kashif.auction.auctionid, m3kashif.auction.details
+HAVING
+    COUNT(m3kashif.userauctionxref.userid) > 1
+ORDER BY
+    participant_count DESC;
+
+-- Q7: Sellers Who Listed Toyota Cars and Their Auction Status
+SELECT
+    m3kashif.users.username,
+    m3kashif.cars.make,
+    m3kashif.auction.status
+FROM
+    m3kashif.users
+JOIN m3kashif.cars ON m3kashif.users.userid = m3kashif.cars.userid
+JOIN m3kashif.auction ON m3kashif.cars.carid = m3kashif.auction.carid
+WHERE
+    m3kashif.cars.make = 'Toyota'
+ORDER BY
+    m3kashif.users.username;
+
+-- Q8: Top 5 Users with the Highest Bids
+SELECT
+    m3kashif.users.username,
+    m3kashif.bids.bidamount,
+    m3kashif.bids.auctionid
+FROM
+    m3kashif.bids
+JOIN m3kashif.users ON m3kashif.bids.userid = m3kashif.users.userid
+ORDER BY
+    m3kashif.bids.bidamount DESC
+FETCH FIRST 5 ROWS ONLY;
+
+-- Q9: Archive Users with Role 2 Instead of Deleting
+UPDATE m3kashif.users
+SET role = 99  -- Archived role
+WHERE role = 2;
+
+SELECT
+    userid,
+    username,
+    role
+FROM
+    m3kashif.users
+WHERE role = 99;
