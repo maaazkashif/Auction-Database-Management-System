@@ -1,0 +1,113 @@
+-- Q1: Join with Grouping and Aggregation - Total Bids and Total Bid Amount for Each User
+SELECT 
+    m3kashif.users.username,
+    COUNT(m3kashif.bids.bidid) AS total_bids,
+    SUM(m3kashif.bids.bidamount) AS total_bid_amount
+FROM 
+    m3kashif.users
+JOIN 
+    m3kashif.bids ON m3kashif.users.userid = m3kashif.bids.userid
+GROUP BY 
+    m3kashif.users.username
+HAVING 
+    SUM(m3kashif.bids.bidamount) > 50000
+ORDER BY 
+    total_bid_amount DESC;
+
+-- Q2: Set Operation (UNION) - Auctions Categorized by High and Low Bids
+SELECT 
+    m3kashif.auction.auctionid,
+    'High Bids' AS category
+FROM 
+    m3kashif.auction
+WHERE 
+    m3kashif.auction.currentbid > 10000
+
+UNION
+
+SELECT 
+    m3kashif.auction.auctionid,
+    'Low Bids' AS category
+FROM 
+    m3kashif.auction
+WHERE 
+    m3kashif.auction.currentbid <= 10000;
+
+-- Q3: Statistical Function (AVG) - Average Mileage Per Car Make
+SELECT 
+    m3kashif.cars.make,
+    AVG(m3kashif.cars.mileage) AS avg_mileage
+FROM 
+    m3kashif.cars
+GROUP BY 
+    m3kashif.cars.make
+ORDER BY 
+    avg_mileage DESC;
+
+-- Q4: Subquery - Auctions Where the Current Bid Exceeds the Average Starting Bid
+SELECT 
+    m3kashif.auction.auctionid,
+    m3kashif.auction.currentbid,
+    m3kashif.auction.startingbid
+FROM 
+    m3kashif.auction
+WHERE 
+    m3kashif.auction.currentbid > (
+        SELECT 
+            AVG(m3kashif.auction.startingbid)
+        FROM 
+            m3kashif.auction
+    )
+ORDER BY 
+    m3kashif.auction.currentbid DESC;
+
+-- Q5: Window Function (ROW_NUMBER) - Top 3 Highest Bids for Each Auction
+SELECT 
+    m3kashif.bids.auctionid,
+    m3kashif.bids.bidid,
+    m3kashif.bids.bidamount,
+    ROW_NUMBER() OVER (
+        PARTITION BY m3kashif.bids.auctionid 
+        ORDER BY m3kashif.bids.bidamount DESC
+    ) AS rank
+FROM 
+    m3kashif.bids
+WHERE 
+    rank <= 3
+ORDER BY 
+    m3kashif.bids.auctionid, rank;
+
+-- Q6: EXISTS Query - Show Users Who Have Placed at Least One Bid
+SELECT 
+    m3kashif.users.username
+FROM 
+    m3kashif.users
+WHERE 
+    EXISTS (
+        SELECT 1
+        FROM m3kashif.bids
+        WHERE m3kashif.bids.userid = m3kashif.users.userid
+    )
+ORDER BY 
+    m3kashif.users.username;
+
+-- Q7: MINUS Query - Show Auctions That Have No Bids
+SELECT 
+    m3kashif.auction.auctionid,
+    m3kashif.auction.details
+FROM 
+    m3kashif.auction
+
+MINUS
+
+SELECT 
+    DISTINCT m3kashif.bids.auctionid,
+    NULL AS details
+FROM 
+    m3kashif.bids;
+
+-- Q8: COUNT Query - Count the Total Number of Bids Placed by All Users
+SELECT 
+    COUNT(*) AS total_bids
+FROM 
+    m3kashif.bids;
