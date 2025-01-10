@@ -27,15 +27,15 @@ payment transactions.
 
 3. Database Tables
 Users
- Fields:
+- Fields:
 o UserID: Unique identifier for each user.
 o Username: User's login name.
 o Password: Encrypted user password.
 o Email: User's email address.
 o Role: User's role (e.g., buyer, seller).
 
-Cars
- Fields:
+Cars 
+- Fields:
 o CarID: Unique identifier for each car.
 o Make: Car manufacturer.
 o Model: Car model.
@@ -46,8 +46,8 @@ o Description: Detailed description of the car.
 o SellerID: Foreign key referencing Users table (indicates the seller of the car).
 o ImageURL: URL to an image of the car.
 
-Auctions
- Fields:
+Auctions 
+- Fields:
 o AuctionID: Unique identifier for each auction.
 o CarID: Foreign key referencing Cars table (the car being auctioned).
 o StartTime: Start time of the auction.
@@ -57,7 +57,7 @@ o ReservePrice: Minimum price that must be met for the auction to be successful.
 o CurrentBid: Current highest bid amount.
 
 Bids
- Fields:
+- Fields:
 o BidID: Unique identifier for each bid.
 o AuctionID: Foreign key referencing Auctions table (the auction in which the bid was
 placed).
@@ -66,7 +66,7 @@ o BidAmount: Amount of the bid.
 o BidTime: Timestamp when the bid was placed.
 
 Transactions
- Fields:
+- Fields:
 o TransactionID: Unique identifier for each transaction.
 o AuctionID: Foreign key referencing Auctions table (the auction associated with the
 transaction).
