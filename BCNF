@@ -1,0 +1,57 @@
+BCNF: A relation is in BCNF if and only if every nontrivial, left irreducible FD has a super key ( for simplicity we consider candidate key) as its determinant.
+1. Partial and Transitive Dependencies 
+Objective: Identifying and listing all functional dependencies, including partial and transitive dependencies.
+Tables and Functional Dependencies (FDs):
+Users Table
+Attributes: USERID, USERNAME, PASSWORD, EMAIL, ROLE
+Primary Key: USERID
+Functional Dependency: USERID → USERNAME, PASSWORD, EMAIL, ROLE
+Analysis: Since USERID determines all other attributes directly, there are no transitive dependencies. This table is already in 3NF and BCNF.
+Auction Table
+Attributes: AUCTIONID, CARID, STARTTIME, ENDTIME, RESERVEPRICE, CURRENTBID, DETAILS, STATUS, STARTINGBID
+Primary Key: AUCTIONID
+Functional Dependency: AUCTIONID → CARID, STARTTIME, ENDTIME, RESERVEPRICE, CURRENTBID, DETAILS, STATUS, STARTINGBID
+Analysis: AUCTIONID is the primary key and determines all other attributes, so this table has no transitive dependencies and is in 3NF and BCNF.
+Bids Table
+Attributes: BIDID, AUCTIONID, USERID, BIDAMOUNT, BIDTIME
+Primary Key: BIDID
+Functional Dependencies:
+BIDID → AUCTIONID, USERID, BIDAMOUNT, BIDTIME
+AUCTIONID, USERID, BIDTIME → BIDAMOUNT
+Analysis: BIDID uniquely identifies each bid, and all other attributes depend directly on it. The composite key dependency (AUCTIONID, USERID, BIDTIME → BIDAMOUNT) also does not violate BCNF. Therefore, the Bids table is in BCNF.
+Cars Table
+Attributes: CARID, MAKE, MODEL, YEAR, MILEAGE, VIN, DESCRIPTION, USERID, IMAGEURL
+Primary Key: CARID
+Functional Dependency: CARID → MAKE, MODEL, YEAR, MILEAGE, VIN, DESCRIPTION, USERID, IMAGEURL
+Analysis: All attributes depend directly on CARID, the primary key. There are no partial or transitive dependencies, so the Cars table is in BCNF.
+Transactions Table
+Attributes: TRANSACTIONID, USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+Primary Key: TRANSACTIONID
+Functional Dependencies:
+TRANSACTIONID → USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+USERID, AUCTIONID → PAYMENTAMOUNT, PAYMENTDATE (if one payment per auction per user)
+Analysis: Since there is a transitive dependency between USERID, AUCTIONID and PAYMENTAMOUNT, PAYMENTDATE, we decompose this table to remove the transitive dependency using Bernstein’s Algorithm (explained below).
+
+2. Bernstein and BCNF Algorithms
+Applying Bernstein's Algorithm to Transactions Table:
+Step 1: Identify Functional Dependencies:
+TRANSACTIONID → USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+USERID, AUCTIONID → PAYMENTAMOUNT, PAYMENTDATE
+Step 2: Decompose into relations to remove transitive dependencies:
+Create Transactions table: R1(TRANSACTIONID, USERID, AUCTIONID) with TRANSACTIONID as the primary key.
+Create UserPayments table: R2(USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE) with the composite key (USERID, AUCTIONID) as the primary key.
+Result: This decomposition removes the transitive dependency by ensuring that each determinant in UserPayments and Transactions is a candidate key, fulfilling BCNF requirements.
+
+3. Conclusion:
+Each table now adheres to BCNF standards. The Transactions table was successfully decomposed into Transactions and UserPayments using Bernstein’s Algorithm to remove transitive dependencies, ensuring compliance with BCNF.
+
+Summary and Final Tables in BCNF
+Each table is now in BCNF after verifying and decomposing based on functional dependencies. The final tables are:
+Users Table: USERID, USERNAME, PASSWORD, EMAIL, ROLE
+Auction Table: AUCTIONID, CARID, STARTTIME, ENDTIME, RESERVEPRICE, CURRENTBID, DETAILS, STATUS, STARTINGBID
+Bids Table: BIDID, AUCTIONID, USERID, BIDAMOUNT, BIDTIME
+Cars Table: CARID, MAKE, MODEL, YEAR, MILEAGE, VIN, DESCRIPTION, USERID, IMAGEURL
+Transactions Table (Decomposed):
+Transactions: TRANSACTIONID, USERID, AUCTIONID
+UserPayments: USERID, AUCTIONID, PAYMENTAMOUNT, PAYMENTDATE
+
